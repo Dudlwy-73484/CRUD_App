@@ -21,12 +21,12 @@ public class CrudApplication {
     public CommandLineRunner loadData(CustomerRepository repository) {
         return (args) -> {
             // save a couple of customers
-            repository.save(new Customer("Jack", "Bauer"));
-            repository.save(new Customer("Chloe", "O'Brian"));
-            repository.save(new Customer("Kim", "Bauer"));
-            repository.save(new Customer("David", "Palmer"));
-            repository.save(new Customer("Michelle", "Dessler"));
-
+            repository.save(new Customer("Jamal", "Harton"));
+            repository.save(new Customer("Krissy", "McLauren"));
+            repository.save(new Customer("Dante", "Jones"));
+            repository.save(new Customer("Keke", "Palmer"));
+            repository.save(new Customer("Miles", "Morales"));
+            
             // fetch all customers
             log.info("Customers found with findAll():");
             log.info("-------------------------------");
