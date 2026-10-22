@@ -62,7 +62,20 @@ public class MainView extends VerticalLayout {
 
         filter.setPlaceholder("Filter by last name");
 
-        // Hook logic to components
+        sortFirstNameBtn.addClickListener(e -> {
+            if (isAscending) {
+                grid.sort(Collections.singletonList(
+                        new GridSortOrder<>(firstNameColumn, SortDirection.ASCENDING)
+                ));
+                sortFirstNameBtn.setIcon(VaadinIcon.ARROW_UP.create());
+            } else {
+                grid.sort(Collections.singletonList(
+                        new GridSortOrder<>(firstNameColumn, SortDirection.DESCENDING)
+                ));
+                sortFirstNameBtn.setIcon(VaadinIcon.ARROW_DOWN.create());
+            }
+            isAscending = !isAscending;
+        });
 
         // 4. Click listener to handle sorting programmatically when button is clicked
         sortFirstNameBtn.addClickListener(e -> {
@@ -85,7 +98,6 @@ public class MainView extends VerticalLayout {
         filter.setValueChangeMode(ValueChangeMode.LAZY);
         filter.addValueChangeListener(e -> listCustomers(e.getValue()));
 
-        // Connect selected Customer to editor or hide if none is selected
         grid.asSingleSelect().addValueChangeListener(e -> {
             editor.editCustomer(e.getValue());
         });
@@ -99,7 +111,6 @@ public class MainView extends VerticalLayout {
             listCustomers(filter.getValue());
         });
 
-        // Initialize listing
         listCustomers(null);
     }
 
