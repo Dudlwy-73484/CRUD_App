@@ -1,6 +1,5 @@
 package vistula.edu.pl.CRUD_App;
 
-
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -11,68 +10,75 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import org.springframework.util.StringUtils;
 
-@Route
-public class MainView extends VerticalLayout {
+    @Route
+    public class MainView extends VerticalLayout {
 
-    private final CustomerRepository repo;
+        private final CustomerRepository repo;
 
-    private final CustomerEditor editor;
+        private final CustomerEditor editor;
 
-    final Grid<Customer> grid;
+        final Grid<Customer> grid;
 
-    final TextField filter;
+        final TextField filter;
 
-    private final Button addNewBtn;
+        private final Button addNewBtn;
 
-    public MainView(CustomerRepository repo, CustomerEditor editor) {
-        this.repo = repo;
-        this.editor = editor;
-        this.grid = new Grid<>(Customer.class);
-        this.filter = new TextField();
-        this.addNewBtn = new Button("New customer", VaadinIcon.PLUS.create());
+        public MainView(CustomerRepository repo, CustomerEditor editor) {
+            this.repo = repo;
+            this.editor = editor;
+            this.grid = new Grid<>(Customer.class);
+            this.filter = new TextField();
+            this.addNewBtn = new Button("New customer", VaadinIcon.PLUS.create());
 
-        // build layout
-        HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
-        add(actions, grid, editor);
+            // build layout
+            HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
+            add(actions, grid, editor);
 
-        grid.setHeight("300px");
-        grid.setColumns("id", "firstName", "lastName");
-        grid.getColumnByKey("id").setWidth("50px").setFlexGrow(0);
+            grid.setHeight("300px");
+            grid.setColumns("id", "firstName", "lastName");
 
-        filter.setPlaceholder("Filter by last name");
+            // Column configurations
+            grid.getColumnByKey("id").setWidth("50px").setFlexGrow(0);
 
-        // Hook logic to components
+            // --- ADDED SORTING TO FIRST NAME HERE ---
+            grid.getColumnByKey("firstName")
+                    .setSortProperty("firstName")
+                    .setSortable(true);
 
-        // Replace listing with filtered content when user changes filter
-        filter.setValueChangeMode(ValueChangeMode.LAZY);
-        filter.addValueChangeListener(e -> listCustomers(e.getValue()));
+            filter.setPlaceholder("Filter by last name");
 
-        // Connect selected Customer to editor or hide if none is selected
-        grid.asSingleSelect().addValueChangeListener(e -> {
-            editor.editCustomer(e.getValue());
-        });
+            // Hook logic to components
 
-        // Instantiate and edit new Customer the new button is clicked
-        addNewBtn.addClickListener(e -> editor.editCustomer(new Customer("", "")));
+            // Replace listing with filtered content when user changes filter
+            filter.setValueChangeMode(ValueChangeMode.LAZY);
+            filter.addValueChangeListener(e -> listCustomers(e.getValue()));
 
-        // Listen changes made by the editor, refresh data from backend
-        editor.setChangeHandler(() -> {
-            editor.setVisible(false);
-            listCustomers(filter.getValue());
-        });
+            // Connect selected Customer to editor or hide if none is selected
+            grid.asSingleSelect().addValueChangeListener(e -> {
+                editor.editCustomer(e.getValue());
+            });
 
-        // Initialize listing
-        listCustomers(null);
-    }
+            // Instantiate and edit new Customer the new button is clicked
+            addNewBtn.addClickListener(e -> editor.editCustomer(new Customer("", "")));
 
-    // tag::listCustomers[]
-    void listCustomers(String filterText) {
-        if (StringUtils.hasText(filterText)) {
-            grid.setItems(repo.findByLastNameStartsWithIgnoreCase(filterText));
-        } else {
-            grid.setItems(repo.findAll());
+            // Listen changes made by the editor, refresh data from backend
+            editor.setChangeHandler(() -> {
+                editor.setVisible(false);
+                listCustomers(filter.getValue());
+            });
+
+            // Initialize listing
+            listCustomers(null);
         }
-    }
-    // end::listCustomers[]
 
-}
+        // tag::listCustomers[]
+        void listCustomers(String filterText) {
+            if (StringUtils.hasText(filterText)) {
+                grid.setItems(repo.findByLastNameStartsWithIgnoreCase(filterText));
+            } else {
+                grid.setItems(repo.findAll());
+            }
+        }
+        // end::listCustomers[]
+
+    }
